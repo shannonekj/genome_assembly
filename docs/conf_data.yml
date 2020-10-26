@@ -1,0 +1,16 @@
+# Configuration file for carrying out vertebrate genome assembly using the following sequencing technologies:
+#    - PacBio HiFi long reads
+#    - 10X Genomics pseudo-long reads
+#    - Arima hi-c reads
+
+## Directories
+hifi_dir: /path/to/raw/hifi/reads
+tenx_dir: /path/to/raw/tenx/reads
+hic_dir: /path/to/raw/hic/reads
+
+## Files
+hifi_file: raw_file_name.fq
+tenx_r1:
+tenx_r2:
+hic_r1:
+hic_r2:
