@@ -1,19 +1,28 @@
+#!/usr/bin/env python3
+# File   : Snakefile
+# Author : Shannon Joslin <sejoslin@ucdavis.edu>
+# Date   : 2020.10.26
+
+##############
+##  CONFIG  ##
+##############
+
 # override this with --configfile on command line
 configfile: 'docs/conf_data.yml'
 
-### config stuff loaded from config file
-sequence_data_dir = config['sequence_data_dir'].rstrip('/')
+# general info
+sex = config['sex']
+species_id = config['speciesID']
+genomesize = config['genomesize']
+n_pcb_runs = config['number_of_pcb_runs']
 
 # inputs
 ## data
-hifi_dir
-hifi_file
-tenx_dir
-tenx_r1
-tenx_r2
-hic_dir
-hic_r1
-hic_r2
+hifi_file = config['hifi']
+tenx_r1 = config['tenx_r1']
+tenx_r2 = config['tenx_r2']
+hic_r1 = config['hic_r1']
+hic_r2 = config['hic_r2']
 
 # r00lz
 

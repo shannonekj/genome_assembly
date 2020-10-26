@@ -3,14 +3,25 @@
 #    - 10X Genomics pseudo-long reads
 #    - Arima hi-c reads
 
-## Directories
-hifi_dir: /path/to/raw/hifi/reads
-tenx_dir: /path/to/raw/tenx/reads
-hic_dir: /path/to/raw/hic/reads
+# GENERAL INFORMATION
+sex: M
+speciesID: HypTra
+genomesize: 890000000
+number_of_pcb_runs: 2
 
-## Files
-hifi_file: raw_file_name.fq
-tenx_r1:
-tenx_r2:
-hic_r1:
-hic_r2:
+
+# DATA
+## raw input
+### please use full path to each file & ensure that your raw data are backed up and read only
+#### tenx
+tenx_r1: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-10X_M/Male2_S63_L004_R1_001.fastq.gz
+tenx_r2: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-10X_M/Male2_S63_L004_R2_001.fastq.gz
+
+#### pacbio
+# make sure *.subreads.bam and *.subreads.bam.pbi have the same prefix
+hifi: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-pcb_M/PB420_DeltaSmelt_Male_HiFi/r64069_20200207_193007/D1/4_D01_Primary/m64069_200211_020731.subreads.bam
+
+#### hi-c
+hic_r1: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-hic_F/Smelt_Results/Hi-C/Smelt-Joslin_R1_001.fastq.gz
+hic_r2: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-hic_F/Smelt_Results/Hi-C/Smelt-Joslin_R2_001.fastq.gz
+
