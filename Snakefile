@@ -28,7 +28,15 @@ hic_r2 = config['hic_r2']
 
 rule all:
     input:
-        "file"
+        "symlinked files"
+
+rule sym_link:
+    input:
+        "raw files"
+    output:
+        "symlinked files"
+
+
 
 # PLAN
 
