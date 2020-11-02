@@ -24,6 +24,8 @@ tenx_r2 = config['tenx_r2']
 HIC_r1 = config['hic_r1']
 HIC_r2 = config['hic_r2']
 
+
+
 # r00lz
 
 #rule all:
@@ -32,18 +34,24 @@ HIC_r2 = config['hic_r2']
 
 rule sym_link:
     input:
-        tnx_r1 = tenx_r1,
-        tnx_r2 = tenx_r2,
-        pcb_hf = hifi_file,
-        hic_r1 = HIC_r1,
-        hic_r2 = HIC_r2
+        tnxR1 = tenx_r1,
+        tnxR2 = tenx_r2,
+        pcbBM = hifi_file,
+        hicR1 = HIC_r1,
+        hicR2 = HIC_r2
     output:
-        'inputs/' + species_id + '_tnx_R1.fq.gz',
-        'inputs/' + species_id + '_tnx_R2.fq.gz',
-        'inputs/' + species_id + '_pcb_hf.bam',
-        'inputs/' + species_id + '_hic_R1.fq.gz',
-        'inputs/' + species_id + '_hic_R2.fq.gz'
-
+        tnxR1 = 'inputs/00-raw/' + species_id + '_tnx_R1.fq.gz',
+        tnxR2 = 'inputs/00-raw' + species_id + '_tnx_R2.fq.gz',
+        pcbBM = 'inputs/00-raw/' + species_id + '_pcb_hf.bam',
+        hicR1 = 'inputs/00-raw/' + species_id + '_hic_R1.fq.gz',
+        hicR2 = 'inputs/00-raw/' + species_id + '_hic_R2.fq.gz'
+    shell:'''
+        ln -s {input.tnxR1} {output.tnxR1}
+        ln -s {input.tnxR2} {output.tnxR2}
+        ln -s {input.pcbBM} {output.pcbBM}
+        ln -s {input.hicR1} {output.hicR1}
+        ln -s {input.hicR2} {output.hicR2}
+    '''
 
 
 # PLAN
