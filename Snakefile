@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File   : Snakefile
 # Author : Shannon Joslin <sejoslin@ucdavis.edu>
-# Date   : 2020.10.26
+# Date   : 2020.11.02
 
 ##############
 ##  CONFIG  ##
@@ -21,20 +21,26 @@ n_pcb_runs = config['number_of_pcb_runs']
 hifi_file = config['hifi']
 tenx_r1 = config['tenx_r1']
 tenx_r2 = config['tenx_r2']
-hic_r1 = config['hic_r1']
-hic_r2 = config['hic_r2']
+HIC_r1 = config['hic_r1']
+HIC_r2 = config['hic_r2']
 
 # r00lz
 
-rule all:
-    input:
-        "symlinked files"
+#rule all:
+#    input:
+#        "symlinked files"
 
 rule sym_link:
     input:
-        "raw files"
+        tnx_r1 = tenx_r1,
+        tnx_r2 = tenx_r2,
+        pcb_hf = hifi_file,
+        hic_r1 = HIC_r1,
+        hic_r2 = HIC_r2
     output:
-        "symlinked files"
+        'inputs/' + species_id + '_tnx_R1.fq.gz',
+        'inputs/' + species_id + '_tnx_R2.fq.gz',
+        'inputs/' + species_id + '_pcb_hf.bam'
 
 
 
