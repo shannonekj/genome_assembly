@@ -40,7 +40,9 @@ rule sym_link:
     output:
         'inputs/' + species_id + '_tnx_R1.fq.gz',
         'inputs/' + species_id + '_tnx_R2.fq.gz',
-        'inputs/' + species_id + '_pcb_hf.bam'
+        'inputs/' + species_id + '_pcb_hf.bam',
+        'inputs/' + species_id + '_hic_R1.fq.gz',
+        'inputs/' + species_id + '_hic_R2.fq.gz'
 
 
 
