@@ -72,12 +72,7 @@ rule run_hicanu:
         asm_hc = 'inputs/01-hicanu/' + species_id + '.contigs.fasta'
     conda: 'envs/hicanu.yml'
     shell:'''
-    canu \
- -p {input.prefix} -d inputs/01-hicanu \
- genomeSize={input.g} \
--useGrid=true \
--gridOptions="--time=96:00:00 -p bigmemh" \
--pacbio-hifi m64069_200211_020731.ccs.fastq.gz
+        canu  -p {input.prefix} -d inputs/01-hicanu genomeSize={input.g}m -useGrid=true -gridOptions="--time=96:00:00 -p bigmemh" -pacbio-hifi {output.asm_hc}
     '''
 
 
