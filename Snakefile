@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File   : Snakefile
 # Author : Shannon Joslin <sejoslin@ucdavis.edu>
-# Date   : 2020.11.02
+# Date   : 2020.11.09
 
 ##############
 ##  CONFIG  ##
@@ -51,6 +51,33 @@ rule sym_link:
         ln -s {input.pcbBM} {output.pcbBM}
         ln -s {input.hicR1} {output.hicR1}
         ln -s {input.hicR2} {output.hicR2}
+    '''
+
+rule get_ccs:
+    input:
+        pcbBM = 'inputs/00-raw/' + species_id + '_pcb_hf.bam'
+    output:
+        pcbCCS = 'inputs/00-raw/' + species_id + '_pcb_hf_ccs.bam'
+    conda: 'envs/ccs.yml'
+    shell:'''
+        ccs BLAH BALH
+    '''
+
+rule run_hicanu:
+    input:
+        prefix = species_id
+        g = genomesize
+        pcbCCS = 'inputs/00-raw/' + species_id + '_pcb_hf_ccs.bam'
+    output:
+        asm_hc = 'inputs/01-hicanu/' + species_id + '.contigs.fasta'
+    conda: 'envs/hicanu.yml'
+    shell:'''
+    canu \
+ -p {input.prefix} -d inputs/01-hicanu \
+ genomeSize={input.g} \
+-useGrid=true \
+-gridOptions="--time=96:00:00 -p bigmemh" \
+-pacbio-hifi m64069_200211_020731.ccs.fastq.gz
     '''
 
 
