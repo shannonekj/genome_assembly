@@ -31,7 +31,7 @@ HIC_r2 = config['hic_r2']
 
 rule all:
     input:
-        'inputs/01-ccs/' + species_id + '_pcb_hf_ccs.bam'
+        'inputs/02-hicanu/' + species_id + '.contigs.fasta'
 
 rule sym_link:
     input:
@@ -77,7 +77,7 @@ rule run_hicanu:
         g = genomesize
     conda: 'envs/hicanu.yml'
     shell:'''
-        canu  -p {input.prefix} -d inputs/01-hicanu genomeSize={input.g}m -useGrid=true -gridOptions="--time=96:00:00 -p bigmemh" -pacbio-hifi {output.asm_hc}
+        canu  -p {params.prefix} -d inputs/01-hicanu genomeSize={params.g}m -useGrid=true -gridOptions="--time=96:00:00 -p bigmemh" -pacbio-hifi {output.asm_hc}
     '''
 
 
