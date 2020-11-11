@@ -71,11 +71,9 @@ rule get_ccs:
 rule qc_kat_hist:
     input:
         tnx_r1 = 'inputs/00-raw/' + species_id + '_tnx_R1.fq.gz',
-        tnx_r2 = 'inputs/00-raw/' + species_id + '_tnx_R2.fq.gz'
-#        tnxR1 = 'inputs/00-raw/' + species_id + '_tnx_R1.fq.gz',
-#        tnxR2 = 'inputs/00-raw/' + species_id + '_tnx_R2.fq.gz',
-#        hicR1 = 'inputs/00-raw/' + species_id + '_hic_R1.fq.gz',
-#        hicR2 = 'inputs/00-raw/' + species_id + '_hic_R2.fq.gz'
+        tnx_r2 = 'inputs/00-raw/' + species_id + '_tnx_R2.fq.gz',
+        hic_r1 = 'inputs/00-raw/' + species_id + '_hic_R1.fq.gz',
+        hic_r2 = 'inputs/00-raw/' + species_id + '_hic_R2.fq.gz'
     output:
         'outputs/reports_raw_data/katHist_{params.prefix}_{params.tnx}_k{params.kmer}'
     conda: 'kat.yml'
@@ -87,6 +85,7 @@ rule qc_kat_hist:
         hic = 'hic'
     shell:'''
         kat hist -o katHist_{params.prefix}_{params.tnx}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.tnx_r1} {input.tnx_r2}
+        kat hist -o katHist_{params.prefix}_{params.hic}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.hic_r1} {input.hic_r2}
     '''
 
 rule qc_kat_gcp:
