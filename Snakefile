@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File   : Snakefile
 # Author : Shannon Joslin <sejoslin@ucdavis.edu>
-# Date   : 2020.11.09
+# Date   : 2020.11.10
 
 ##############
 ##  CONFIG  ##
@@ -66,6 +66,41 @@ rule get_ccs:
     shell:'''
         ccs --chunk 1/1 -j {params.thread} --log-level INFO --log-file all.log --report-file {params.prefix}_ccs_report.txt {input.pcbBM} {params.prefix}_pcb_hf_ccs.fastq.gz
     '''
+
+rule qc_kat_hist:
+    input:
+        r1 = 'inputs/00-raw/' + species_id + '{sample}_R1.fq.gz',
+        r2 = 'inputs/00-raw/' + species_id + '{sample}_R2.fq.gz'
+#        tnxR1 = 'inputs/00-raw/' + species_id + '_tnx_R1.fq.gz',
+#        tnxR2 = 'inputs/00-raw/' + species_id + '_tnx_R2.fq.gz',
+#        hicR1 = 'inputs/00-raw/' + species_id + '_hic_R1.fq.gz',
+#        hicR2 = 'inputs/00-raw/' + species_id + '_hic_R2.fq.gz'
+    output:
+        'outputs/reports_raw_data/katHist_{params.prefix}_{params.tnx}_k{params.kmer}'
+    conda: 'kat.yml'
+    params:
+        kmer = '31',
+        prefix = species_id,
+        thread = '4',
+        tnx = '10X',
+        hic = 'hic'
+    shell:'''
+        kat hist -o katHist_{params.prefix}_{params.tnx}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.tnxR1} {input.tnxR2}
+    '''
+
+rule qc_kat_gcp:
+    input:
+        'inputs/00-raw/{sample}.fq.gz'
+
+rule qc_kat_comp:
+    input:
+        'inputs/00-raw/{sample}.fq.gz'
+
+rule qc_pacbio:
+    input:
+        'ccs.bam'
+    output:
+        'ccs_report.txt'
 
 rule run_hicanu:
     input:
