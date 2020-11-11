@@ -31,7 +31,8 @@ HIC_r2 = config['hic_r2']
 
 rule all:
     input:
-        'inputs/02-hicanu/' + species_id + '.contigs.fasta'
+        'inputs/02-hicanu/' + species_id + '.contigs.fasta',
+        'outputs/reports_raw_data/katHist_{params.prefix}_{params.tnx}_k{params.kmer}'
 
 rule sym_link:
     input:
@@ -69,8 +70,8 @@ rule get_ccs:
 
 rule qc_kat_hist:
     input:
-        r1 = 'inputs/00-raw/' + species_id + '{sample}_R1.fq.gz',
-        r2 = 'inputs/00-raw/' + species_id + '{sample}_R2.fq.gz'
+        tnx_r1 = 'inputs/00-raw/' + species_id + '_tnx_R1.fq.gz',
+        tnx_r2 = 'inputs/00-raw/' + species_id + '_tnx_R2.fq.gz'
 #        tnxR1 = 'inputs/00-raw/' + species_id + '_tnx_R1.fq.gz',
 #        tnxR2 = 'inputs/00-raw/' + species_id + '_tnx_R2.fq.gz',
 #        hicR1 = 'inputs/00-raw/' + species_id + '_hic_R1.fq.gz',
@@ -85,7 +86,7 @@ rule qc_kat_hist:
         tnx = '10X',
         hic = 'hic'
     shell:'''
-        kat hist -o katHist_{params.prefix}_{params.tnx}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.tnxR1} {input.tnxR2}
+        kat hist -o katHist_{params.prefix}_{params.tnx}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.tnx_r1} {input.tnx_r2}
     '''
 
 rule qc_kat_gcp:
