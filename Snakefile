@@ -25,6 +25,15 @@ tenx_r2 = config['tenx_r2']
 HIC_r1 = config['hic_r1']
 HIC_r2 = config['hic_r2']
 
+# lists
+seq_tech_links = {"tenxR1": "path/to/raw/data",
+                  "tenxR2": "path/to/raw/dat",
+                  "pacbio": "path/to/raw/dat",
+                  "hicR1": "path/to/raw/dat",
+                  "hicR2": "path/to/raw/dat"}
+
+TECHNOLOGIES = seq_tech_links.keys()
+
 
 
 # r00lz
@@ -33,6 +42,9 @@ rule all:
     input:
         'inputs/02-hicanu/' + species_id + '.contigs.fasta',
         'outputs/reports_raw_data/katHist_{params.prefix}_{params.tnx}_k{params.kmer}'
+
+rule make_symlink:
+    output: 
 
 rule sym_link:
     input:
