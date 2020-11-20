@@ -102,7 +102,28 @@ rule qc_kat_hist:
 
 rule qc_kat_gcp:
     input:
-        'inputs/00-raw/{sample}.fq.gz'
+        tnx_r1 = 'inputs/00-raw/' + species_id + '_tnx_R1.fq.gz',
+        tnx_r2 = 'inputs/00-raw/' + species_id + '_tnx_R2.fq.gz',
+        hic_r1 = 'inputs/00-raw/' + species_id + '_hic_R1.fq.gz',
+        hic_r2 = 'inputs/00-raw/' + species_id + '_hic_R2.fq.gz'
+    output:
+        'outputs/reports_raw_data/katGcp_{params.prefix}_{params.tnx}_k{params.kmer}.dist_analysis.json',
+        'outputs/reports_raw_data/katGcp_{params.prefix}_{params.tnx}_k{params.kmer}.mx',
+        'outputs/reports_raw_data/katGcp_{params.prefix}_{params.tnx}_k{params.kmer}.mx.png',
+        'outputs/reports_raw_data/katGcp_{params.prefix}_{params.hic}_k{params.kmer}.dist_analysis.json',
+        'outputs/reports_raw_data/katGcp_{params.prefix}_{params.hic}_k{params.kmer}.mx',
+        'outputs/reports_raw_data/katGcp_{params.prefix}_{params.hic}_k{params.kmer}.mx.png'
+    conda: 'kat.yml'
+    params:
+        kmer = '31',
+        prefix = species_id,
+        thread = '4',
+        tnx = '10X',
+        hic = 'hic'
+    shell:'''
+        kat gcp -o katGcp_{params.prefix}_{params.tnx}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.tnx_r1} {input.tnx_r2}
+        kat gcp -o katGcp_{params.prefix}_{params.hic}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.hic_r1} {input.hic_r2}
+    '''
 
 rule qc_kat_comp:
     input:
