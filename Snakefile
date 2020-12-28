@@ -32,9 +32,10 @@ seq_tech_links = {"tenxR1": "path/to/raw/data",
                   "hicR1": "path/to/raw/dat",
                   "hicR2": "path/to/raw/dat"}
 
-TECHNOLOGIES = seq_tech_links.keys()
 
-
+TECH = seq_tech_links.keys()
+#ALL_TECHS = 
+#ILLUM_TECHS = 
 
 # r00lz
 

@@ -8,3 +8,6 @@ Data types:
 * longreads (PacBio)
 * pseudo-longreads (10X)
 * hi-c (Phase & Arima)
+
+dag.pdf built from `snakemake --forceall --dag | dot -Tpdf > dag.pdf`
+rulecall.pdf built from `snakemake --forceall --rulegraph | dot -Tpdf > rulegraph.pdf`
