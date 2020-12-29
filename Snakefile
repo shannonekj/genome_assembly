@@ -43,6 +43,7 @@ rule all:
     input:
         'inputs/02-hicanu/' + species_id + '.contigs.fasta',
         'outputs/reports_raw_data/katHist_{params.prefix}_{params.tnx}_k{params.kmer}'
+        'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R1_001.fastq.gz'
 
 rule make_symlink:
     output: 
@@ -55,11 +56,11 @@ rule sym_link:
         hicR1 = HIC_r1,
         hicR2 = HIC_r2
     output:
-        tnxR1 = 'inputs/00-raw/' + species_id + '_tnx_R1.fq.gz',
-        tnxR2 = 'inputs/00-raw/' + species_id + '_tnx_R2.fq.gz',
-        pcbBM = 'inputs/00-raw/' + species_id + '_pcb_hf.bam',
-        hicR1 = 'inputs/00-raw/' + species_id + '_hic_R1.fq.gz',
-        hicR2 = 'inputs/00-raw/' + species_id + '_hic_R2.fq.gz'
+        tnxR1 = 'inputs/00-raw/' + species_id + sex + '_tnx_R1.fq.gz',
+        tnxR2 = 'inputs/00-raw/' + species_id + sex + '_tnx_R2.fq.gz',
+        pcbBM = 'inputs/00-raw/' + species_id + sex + '_pcb_hf.bam',
+        hicR1 = 'inputs/00-raw/' + species_id + sex + '_hic_R1.fq.gz',
+        hicR2 = 'inputs/00-raw/' + species_id + sex + '_hic_R2.fq.gz'
     shell:'''
         ln -s {input.tnxR1} {output.tnxR1}
         ln -s {input.tnxR2} {output.tnxR2}
@@ -67,6 +68,36 @@ rule sym_link:
         ln -s {input.hicR1} {output.hicR1}
         ln -s {input.hicR2} {output.hicR2}
     '''
+
+rule download_proc10xG:
+    output:
+        "scripts/proc10xG/process_10xReads.py"
+    shell:'''
+        cd scripts
+        git clone https://github.com/shannonekj/proc10xG.git
+        '''
+
+rule proc_tenx_reads:
+    input:
+        script = "scripts/proc10xG/process_10xReads.py",
+        tnxR1 = 'inputs/00-raw/' + species_id + sex + '_tnx_R1.fq.gz',
+        tnxR2 = 'inputs/00-raw/' + species_id + sex + '_tnx_R2.fq.gz'
+    output:
+        tnx_filt_r1 = 'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R1_001.fastq.gz',
+        tnx_filt_r2 = 'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R2_001.fastq.gz',
+    params:
+        prefix = species_id,
+        sex = sex,
+        flt_dir = 'inputs/01-filtered-reads/'
+    conda: 'envs/10X.yml'
+    shell:'''
+        {input.script} \
+        -1 {input.tnxR1} \
+        -2 {input.tnxR2} \
+        -o {params.flt_dir}/{params.prefix}_{params.sex} \
+        -a
+        '''
+
 
 rule get_ccs:
     input:
