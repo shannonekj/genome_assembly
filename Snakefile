@@ -45,9 +45,6 @@ rule all:
         'outputs/reports_raw_data/katHist_{params.prefix}_{params.sex}_{params.tnx}_k{params.kmer}',
         'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R1_001.fastq.gz'
 
-rule make_symlink:
-    output: 
-
 rule sym_link:
     input:
         tnxR1 = tenx_r1,
@@ -85,16 +82,16 @@ rule proc_tenx_reads:
     output:
         tnx_filt_r1 = 'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R1_001.fastq.gz',
         tnx_filt_r2 = 'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R2_001.fastq.gz',
+        barcodes = 'inputs/01-filtered-reads/' + species_id + '_' + sex + 'barcodes.txt'
     params:
         prefix = species_id,
         sex = sex,
-        flt_dir = 'inputs/01-filtered-reads/'
     conda: 'envs/10X.yml'
     shell:'''
         {input.script} \
         -1 {input.tnxR1} \
         -2 {input.tnxR2} \
-        -o {params.flt_dir}/{params.prefix}_{params.sex} \
+        -o inputs/01-filtered-reads/{params.prefix}_{params.sex} \
         -a
         '''
 
