@@ -42,6 +42,7 @@ TECH = seq_tech_links.keys()
 rule all:
     input:
         'inputs/02-hicanu/' + species_id + '_' + sex + '.contigs.fasta',
+        'outputs/reports_raw_data/' + species_id + '_' + sex + 'kmer_analysis.html',
         'outputs/reports_raw_data/katHist_{params.prefix}_{params.sex}_{params.tnx}_k{params.kmer}',
         'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R1_001.fastq.gz'
 
@@ -93,6 +94,18 @@ rule proc_tenx_reads:
         -2 {input.tnxR2} \
         -o inputs/01-filtered-reads/{params.prefix}_{params.sex} \
         -a
+        '''
+
+rule kmer_report_tenx:
+    input:
+        script = 'scripts/kmer_analysis.Rmd',
+        tnx_filt_r1 = 'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R1_001.fastq.gz',
+        tnx_filt_r2 = 'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R2_001.fastq.gz'
+    output:
+        'outputs/reports_raw_data/' + species_id + '_' + sex + 'kmer_analysis.html'
+    conda: 'envs/R_kmer.yml'
+    shell:'''
+        {input.script} {input.tnx_filt_r1} {input.tnx_filt_r2} {output}
         '''
 
 
