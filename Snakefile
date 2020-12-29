@@ -41,8 +41,8 @@ TECH = seq_tech_links.keys()
 
 rule all:
     input:
-        'inputs/02-hicanu/' + species_id + '.contigs.fasta',
-        'outputs/reports_raw_data/katHist_{params.prefix}_{params.tnx}_k{params.kmer}'
+        'inputs/02-hicanu/' + species_id + '_' + sex + '.contigs.fasta',
+        'outputs/reports_raw_data/katHist_{params.prefix}_{params.sex}_{params.tnx}_k{params.kmer}',
         'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R1_001.fastq.gz'
 
 rule make_symlink:
@@ -56,11 +56,11 @@ rule sym_link:
         hicR1 = HIC_r1,
         hicR2 = HIC_r2
     output:
-        tnxR1 = 'inputs/00-raw/' + species_id + sex + '_tnx_R1.fq.gz',
-        tnxR2 = 'inputs/00-raw/' + species_id + sex + '_tnx_R2.fq.gz',
-        pcbBM = 'inputs/00-raw/' + species_id + sex + '_pcb_hf.bam',
-        hicR1 = 'inputs/00-raw/' + species_id + sex + '_hic_R1.fq.gz',
-        hicR2 = 'inputs/00-raw/' + species_id + sex + '_hic_R2.fq.gz'
+        tnxR1 = 'inputs/00-raw/' + species_id + '_' + sex + '_tnx_R1.fq.gz',
+        tnxR2 = 'inputs/00-raw/' + species_id + '_' + sex + '_tnx_R2.fq.gz',
+        pcbBM = 'inputs/00-raw/' + species_id + '_' + sex + '_pcb_hf.bam',
+        hicR1 = 'inputs/00-raw/' + species_id + '_' + sex + '_hic_R1.fq.gz',
+        hicR2 = 'inputs/00-raw/' + species_id + '_' + sex + '_hic_R2.fq.gz'
     shell:'''
         ln -s {input.tnxR1} {output.tnxR1}
         ln -s {input.tnxR2} {output.tnxR2}
@@ -80,8 +80,8 @@ rule download_proc10xG:
 rule proc_tenx_reads:
     input:
         script = "scripts/proc10xG/process_10xReads.py",
-        tnxR1 = 'inputs/00-raw/' + species_id + sex + '_tnx_R1.fq.gz',
-        tnxR2 = 'inputs/00-raw/' + species_id + sex + '_tnx_R2.fq.gz'
+        tnxR1 = 'inputs/00-raw/' + species_id + '_' + sex + '_tnx_R1.fq.gz',
+        tnxR2 = 'inputs/00-raw/' + species_id + '_' + sex + '_tnx_R2.fq.gz'
     output:
         tnx_filt_r1 = 'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R1_001.fastq.gz',
         tnx_filt_r2 = 'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R2_001.fastq.gz',
@@ -101,9 +101,9 @@ rule proc_tenx_reads:
 
 rule get_ccs:
     input:
-        pcbBM = 'inputs/00-raw/' + species_id + '_pcb_hf.bam'
+        pcbBM = 'inputs/00-raw/' + species_id + '_' + sex + '_pcb_hf.bam'
     output:
-        pcbCCS = 'inputs/01-ccs/' + species_id + '_pcb_hf_ccs.bam'
+        pcbCCS = 'inputs/01-ccs/' + species_id + '_' + sex + '_pcb_hf_ccs.bam'
     conda: 'envs/hicanu.yml'
     params:
         prefix = species_id,
@@ -114,12 +114,33 @@ rule get_ccs:
 
 rule qc_kat_hist:
     input:
-        tnx_r1 = 'inputs/00-raw/' + species_id + '_tnx_R1.fq.gz',
-        tnx_r2 = 'inputs/00-raw/' + species_id + '_tnx_R2.fq.gz',
-        hic_r1 = 'inputs/00-raw/' + species_id + '_hic_R1.fq.gz',
-        hic_r2 = 'inputs/00-raw/' + species_id + '_hic_R2.fq.gz'
+        tnx_r1 = 'inputs/00-raw/' + species_id + '_' + sex + '_tnx_R1.fq.gz',
+        tnx_r2 = 'inputs/00-raw/' + species_id + '_' + sex + '_tnx_R2.fq.gz',
+        hic_r1 = 'inputs/00-raw/' + species_id + '_' + sex + '_hic_R1.fq.gz',
+        hic_r2 = 'inputs/00-raw/' + species_id + '_' + sex + '_hic_R2.fq.gz'
+    conda: 'kat.yml'
+    params:
+        kmer = '31',
+        prefix = species_id,
+        sex = sex,
+        thread = '4',
+        tnx = '10X',
+        hic = 'hic'
     output:
-        'outputs/reports_raw_data/katHist_{params.prefix}_{params.tnx}_k{params.kmer}'
+        'outputs/reports_raw_data/katHist_{params.prefix}_{params.sex}_{params.tnx}_k{params.kmer}'
+    shell:'''
+        kat hist -o katHist_{params.prefix}_{params.tnx}_{params.sex}_k{params.kmer} \
+        -m {params.kmer} -t {params.thread} {input.tnx_r1} {input.tnx_r2}
+        kat hist -o katHist_{params.prefix}_{params.hic}_{params.sex}_k{params.kmer} \
+        -m {params.kmer} -t {params.thread} {input.hic_r1} {input.hic_r2}
+    '''
+
+rule qc_kat_gcp:
+    input:
+        tnx_r1 = 'inputs/00-raw/' + species_id + '_' + sex + '_tnx_R1.fq.gz',
+        tnx_r2 = 'inputs/00-raw/' + species_id + '_' + sex + '_tnx_R2.fq.gz',
+        hic_r1 = 'inputs/00-raw/' + species_id + '_' + sex + '_hic_R1.fq.gz',
+        hic_r2 = 'inputs/00-raw/' + species_id + '_' + sex + '_hic_R2.fq.gz'
     conda: 'kat.yml'
     params:
         kmer = '31',
@@ -127,17 +148,6 @@ rule qc_kat_hist:
         thread = '4',
         tnx = '10X',
         hic = 'hic'
-    shell:'''
-        kat hist -o katHist_{params.prefix}_{params.tnx}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.tnx_r1} {input.tnx_r2}
-        kat hist -o katHist_{params.prefix}_{params.hic}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.hic_r1} {input.hic_r2}
-    '''
-
-rule qc_kat_gcp:
-    input:
-        tnx_r1 = 'inputs/00-raw/' + species_id + '_tnx_R1.fq.gz',
-        tnx_r2 = 'inputs/00-raw/' + species_id + '_tnx_R2.fq.gz',
-        hic_r1 = 'inputs/00-raw/' + species_id + '_hic_R1.fq.gz',
-        hic_r2 = 'inputs/00-raw/' + species_id + '_hic_R2.fq.gz'
     output:
         'outputs/reports_raw_data/katGcp_{params.prefix}_{params.tnx}_k{params.kmer}.dist_analysis.json',
         'outputs/reports_raw_data/katGcp_{params.prefix}_{params.tnx}_k{params.kmer}.mx',
@@ -145,13 +155,6 @@ rule qc_kat_gcp:
         'outputs/reports_raw_data/katGcp_{params.prefix}_{params.hic}_k{params.kmer}.dist_analysis.json',
         'outputs/reports_raw_data/katGcp_{params.prefix}_{params.hic}_k{params.kmer}.mx',
         'outputs/reports_raw_data/katGcp_{params.prefix}_{params.hic}_k{params.kmer}.mx.png'
-    conda: 'kat.yml'
-    params:
-        kmer = '31',
-        prefix = species_id,
-        thread = '4',
-        tnx = '10X',
-        hic = 'hic'
     shell:'''
         kat gcp -o katGcp_{params.prefix}_{params.tnx}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.tnx_r1} {input.tnx_r2}
         kat gcp -o katGcp_{params.prefix}_{params.hic}_k{params.kmer} -m {params.kmer} -t {params.thread} {input.hic_r1} {input.hic_r2}
@@ -169,15 +172,16 @@ rule qc_pacbio:
 
 rule run_hicanu:
     input:
-        pcbCCS = 'inputs/01-ccs/' + species_id + '_pcb_hf_ccs.bam'
+        pcbCCS = 'inputs/01-ccs/' + species_id + '_' + sex + '_pcb_hf_ccs.bam'
     output:
-        asm_hc = 'inputs/02-hicanu/' + species_id + '.contigs.fasta'
+        asm_hc = 'inputs/02-hicanu/' + species_id + '_' + sex + '.contigs.fasta'
     params:
         prefix = species_id,
+        sex = sex,
         g = genomesize
     conda: 'envs/hicanu.yml'
     shell:'''
-        canu  -p {params.prefix} -d inputs/01-hicanu genomeSize={params.g}m -useGrid=true -gridOptions="--time=96:00:00 -p bigmemh" -pacbio-hifi {output.asm_hc}
+        canu  -p {params.prefix}_{params.sex} -d inputs/01-hicanu genomeSize={params.g}m -useGrid=true -gridOptions="--time=96:00:00 -p bigmemh" -pacbio-hifi {output.asm_hc}
     '''
 
 
