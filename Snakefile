@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # File   : Snakefile
 # Author : Shannon Joslin <sejoslin@ucdavis.edu>
-# Date   : 2020.11.10
+# Date   : 2021.01.26
 
 ##############
 ##  CONFIG  ##

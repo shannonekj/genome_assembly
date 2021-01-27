@@ -7,30 +7,90 @@
 #       -linkage map (Lew et al. 2015)
 
 
+###############
+###  SETUP  ###
+###############
+# override this with --configfile on command line
+configfile: 'docs/conf_data_F.yml'
+## load in configuration things
+### general info
+sex = config['sex']
+species_id = config['speciesID']
+### raw data
+hifi_file = config['hifi']
+tenx_r1 = config['tenx_r1']
+tenx_r2 = config['tenx_r2']
+HIC_r1 = config['hic_r1']
+HIC_r2 = config['hic_r2']
+### other file inputs
+lg_loci = config['lg_loci']
+lg_tsv = config['lg_tsv']
 
+
+
+###############
+###  r00lz  ###
+###############
 rule all:
     input:
         '/Hyp_tra_' + sex + '.fa'
 
+rule salsa:
+    output:
+        's3_salsa2/scaffolds_FINAL.agp',
+        's3_salsa2/' + species_id + '.fasta'
+
+rule lg_loci_fmt_salsa_agp:
+    input:
+        's3_salsa2/scaffolds_FINAL.agp'
+    output:
+        'd3_output/scaffolds_FINAL_no_white_ends.agp'
+    shell:'''
+        sed 's/[[:blank:]]*$//g' {input} > {output}
+        '''
+
+rule lg_loci_align:
+    input:
+        fa = lg_loci,
+        ref = 's3_salsa2/' + species_id + '.fasta'
+    output:
+        'd3_output/' + species_id + '_loci.sort.bam'
+    conda: 'envs/samtools.yml'
+    shell:'''
+        bwa mem {input.ref} {input.fa} | samtools view -Sb - | samtools sort -o {output}
+        ''' 
+
+rule lg_loci_index:
+    input:
+        'd3_output/' + species_id + '_loci.sort.bam'
+    output:
+        'd3_output/' + species_id + '_loci.sort.bam.bai'
+    conda: 'envs/samtools.yml'
+    shell:'''
+        samtools index {input}
+        '''
+
 rule run_chromonomer:
     input:
-        tsv = 'data/d2_input/Hyp_tra_linkage_groups.tsv',         # created from Lew et al. 2015 Supplemental B and loci mike found
-        bam = 'data/d3_output/Hyp_tra_loci.sort.bam',             # linkage group loci aligned to SALSA2 output assembly
-        agp = 'data/d3_output/scaffolds_FINAL_no_white_ends.agp', # output from SALSA2 with end of line whitespace taken out (sed 's/[[:blank:]]*$//g' <file>)
-        fasta = 'assemblies/s3_salsa2/scaffolds_FINAL.fasta'      # output fasta from SALSA2 assembly (sym linked to salsa dir, rather than salsa/out/ dir)
+        tsv = lg_tsv,                                               # created from Lew et al. 2015 Supplemental B and loci mike found
+        bam = 'd3_output/' + species_id + '_loci.sort.bam',         # linkage group loci aligned to SALSA2 output assembly
+        bai = 'd3_output/' + species_id + '_loci.sort.bam.bai', 
+        agp = 'd3_output/scaffolds_FINAL_no_white_ends.agp',        # output from SALSA2 with end of line whitespace taken out (sed 's/[[:blank:]]*$//g' <file>)
+        fasta = 's3_salsa2/' + species_id + '.fasta'                # output fasta from SALSA2 assembly (sym linked to salsa dir, rather than salsa/out/ dir)
     output:
-        'assemblies/s4_chomonomer/CHRR_integrated.fa'           # output fasta
+        's4_chomonomer/CHRR_integrated.fa'                          # output fasta
     conda: 'conda/chrmnmr.yml'
     params:
-        out_dir = 'assemblies/s4_chomonomer/'
+        out_dir = 's4_chomonomer/'
     shell:'''
         chromonomer --verbose --map {input.tsv} --alns {input.bam} --agp {input.agp} --fasta {input.fasta} --out_path {params.out_dir}
         '''
 
 rule get_final_asm:
     input:
-        'assemblies/s4_chomonomer/CHRR_integrated.fa'
+        's4_chomonomer/CHRR_integrated.fa'
     output:
         '/Hyp_tra_' + sex + '.fa'
     shell:'''
         [ -h {output} ] || ln -s {input} {output}
+        '''
