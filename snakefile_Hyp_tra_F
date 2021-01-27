@@ -1,0 +1,36 @@
+# this is a snakefile for carrying out the assembly of:
+# Species: Hypomesus transpacificus (delta smelt)
+# Sex: female
+# Data: -PacBio hifi
+#       -10X Genomics linked reads (illumina)
+#       -Phase hic (illumina)
+#       -linkage map (Lew et al. 2015)
+
+
+
+rule all:
+    input:
+        '/Hyp_tra_' + sex + '.fa'
+
+rule run_chromonomer:
+    input:
+        tsv = 'data/d2_input/Hyp_tra_linkage_groups.tsv',         # created from Lew et al. 2015 Supplemental B and loci mike found
+        bam = 'data/d3_output/Hyp_tra_loci.sort.bam',             # linkage group loci aligned to SALSA2 output assembly
+        agp = 'data/d3_output/scaffolds_FINAL_no_white_ends.agp', # output from SALSA2 with end of line whitespace taken out (sed 's/[[:blank:]]*$//g' <file>)
+        fasta = 'assemblies/s3_salsa2/scaffolds_FINAL.fasta'      # output fasta from SALSA2 assembly (sym linked to salsa dir, rather than salsa/out/ dir)
+    output:
+        'assemblies/s4_chomonomer/CHRR_integrated.fa'           # output fasta
+    conda: 'conda/chrmnmr.yml'
+    params:
+        out_dir = 'assemblies/s4_chomonomer/'
+    shell:'''
+        chromonomer --verbose --map {input.tsv} --alns {input.bam} --agp {input.agp} --fasta {input.fasta} --out_path {params.out_dir}
+        '''
+
+rule get_final_asm:
+    input:
+        'assemblies/s4_chomonomer/CHRR_integrated.fa'
+    output:
+        '/Hyp_tra_' + sex + '.fa'
+    shell:'''
+        [ -h {output} ] || ln -s {input} {output}
