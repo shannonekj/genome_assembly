@@ -43,7 +43,6 @@ rule all:
     input:
         'inputs/02-hicanu/' + species_id + '_' + sex + '.contigs.fasta',
         'outputs/reports_raw_data/' + species_id + '_' + sex + 'kmer_analysis.html',
-        'outputs/reports_raw_data/katHist_{params.prefix}_{params.sex}_{params.tnx}_k{params.kmer}',
         'inputs/01-filtered-reads/' + species_id + '_' + sex + '_R1_001.fastq.gz'
 
 rule sym_link:
