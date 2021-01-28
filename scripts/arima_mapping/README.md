@@ -29,6 +29,7 @@ CPU=${threads}
 
 EOT
 ```
+
     * `tail -68 01_mapping_arima.sh >> run_arima_mapping.sh`
     * `sed -i 's/java -Xmx4G -Djava.io.tmpdir=temp\/ -jar //'` run_arima_mapping.sh 
     * `sed -i 's/java -Xmx30G -XX:-UseGCOverheadLimit -Djava.io.tmpdir=temp\/ -jar //'` run_arima_mapping.sh

@@ -53,6 +53,15 @@ rule fake:
         's3_salsa2/arima/' + prefix + '_rep1.bam',
         's1_ipa/final.a_ctg.fasta'
 
+rule salsa_arima_mapping:
+    input:
+        ### START HERE ###
+    output:
+        's3_salsa2/arima/' + prefix + '_rep1.bam'
+    params:
+    conda:'envs/arima.yml'
+    shell:
+
 
 rule salsa_fmt_index_asm:
     input:
