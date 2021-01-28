@@ -39,5 +39,7 @@ chromonomer_path: /home/sejoslin/software/bin/chromonomer
 # SOFTWARE PARAMETERS
 ## salsa2
 i: 5
-
+## arima
+### temporary directory to write output to make sure already exists
+scratch_dir: /scratch/sejoslin
 
