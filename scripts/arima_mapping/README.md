@@ -2,8 +2,7 @@
 Scripts taken from https://github.com/shannonekj/mapping_pipeline and modified in the following ways:
 1. `01_mapping_arima.sh`
     * `head -16 01_mapping_arima.sh > run_arima_mapping.sh`
-    * ```
-cat << EOT >> run_arima_mapping.sh
+    * ```cat << EOT >> run_arima_mapping.sh
 set -e
 
 SRA="Smelt-Joslin"
@@ -28,8 +27,7 @@ MERGE_DIR="${out_dir}/05_merged"
 MAPQ_FILTER=10
 CPU=${threads}
 
-EOT
-```
+EOT```
     * `tail -68 01_mapping_arima.sh >> run_arima_mapping.sh`
     * `sed -i 's/java -Xmx4G -Djava.io.tmpdir=temp\/ -jar //'` run_arima_mapping.sh 
     * `sed -i 's/java -Xmx30G -XX:-UseGCOverheadLimit -Djava.io.tmpdir=temp\/ -jar //'` run_arima_mapping.sh
