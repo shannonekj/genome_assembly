@@ -52,15 +52,28 @@ rule all:
 rule fake:
     output:
         's2_scaff10x/' + prefix + '.scf.fasta',
-        's3_salsa2/arima/03_pair_bams/' + prefix + '_rep1.paired.bam',
-        's1_ipa/final.a_ctg.fasta'
+        's1_ipa/final.a_ctg.fasta',
+        scratch_dir + '/' + prefix + '.bam'
 
 ### arima mapping
 #rule salsa_am_1_idx:
 #rule salsa_am_2_fastq_to_bam:
 #rule salsa_am_3_filter_five_prime:
 #rule salsa_am_4_pair_and_map_filt:
-#rule salsa_am_5_add_read_group:
+rule salsa_am_5_add_read_group:
+    input: 
+        scratch_dir + '/' + prefix + '.bam'
+    output:
+        's3_salsa2/arima/03_pair_bams/' + prefix + '_rep1.paired.bam'
+    params:
+        id = prefix,
+        lb = prefix,
+        sm = prefix + '_label'
+    conda: 'arima.yml'
+    shell:'''
+        picard AddOrReplaceReadGroups INPUT={input} OUTPUT={output} ID={params.id} LB={params.lb} SM={params.sm} PL=ILLUMINA PU=none
+        '''
+
 rule salsa_am_6_mark_dup:
     input:
         's3_salsa2/arima/03_pair_bams/' + prefix + '_rep1.paired.bam'
@@ -115,12 +128,13 @@ rule salsa_fmt_index_asm:
 
 rule salsa_fmt_sort_bam:
     input:
-        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam'
+        bam ='s3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam',
+        stats = 's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam.stats'
     output:
         's3_salsa2/' + prefix + '_rep1.sort.bam'
     conda: 'envs/bedsam.yml'
     shell:'''
-        samtools sort -O bam -o {output} {input}
+        samtools sort -O bam -o {output} {input.bam}
         '''
 
 rule salsa_fmt_bam_to_bed:
