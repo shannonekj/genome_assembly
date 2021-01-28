@@ -32,6 +32,8 @@ chrmnmr_path = config['chromonomer_path']
 ### parameters
 #### salsa2
 i = config['i']
+#### arima
+scratch_dir = config['scratch_dir']
 
 # other
 prefix = species_id + '_' + sex
@@ -50,7 +52,7 @@ rule all:
 rule fake:
     output:
         's2_scaff10x/' + prefix + '.scf.fasta',
-        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam',
+        's3_salsa2/arima/03_pair_bams/' + prefix + '_rep1.paired.bam',
         's1_ipa/final.a_ctg.fasta'
 
 ### arima mapping
@@ -59,12 +61,24 @@ rule fake:
 #rule salsa_am_3_filter_five_prime:
 #rule salsa_am_4_pair_and_map_filt:
 #rule salsa_am_5_add_read_group:
-#rule salsa_am_6_mark_dup:
+rule salsa_am_6_mark_dup:
+    input:
+        's3_salsa2/arima/03_pair_bams/' + prefix + '_rep1.paired.bam'
+    output:
+        bam = 's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam',
+        metrics = 's3_salsa2/arima/04_deduped/metrics.' + prefix + '.txt'
+    params:
+        tmp_dir = scratch_dir
+    conda: 'arima.yml'
+    shell:'''
+        picard MarkDuplicates INPUT={input} OUTPUT={output.bam} METRICS_FILE={output.metrics} TMP_DIR={params.tmp_dir} ASSUME_SORTED=TRUE VALIDATION_STRINGENCY=LENIENT REMOVE_DUPLICATES=TRUE 
+        '''
+
 rule salsa_am_7_idx_bams:
     input:
-        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam'
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam'
     output:
-        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam.bai'
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam.bai'
     conda: 'arima.yml'
     shell:'''
         samtools index {input}
@@ -73,10 +87,10 @@ rule salsa_am_7_idx_bams:
 
 rule salsa_am_8_get_stats:
     input:
-        bam = 's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam',
-        bai = 's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam.bai'
+        bam = 's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam',
+        bai = 's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam.bai'
     output:
-        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam.stats'
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam.stats'
     params:
         script = 'scripts/arima_mapping/get_stats.pl'
     conda: 'arima.yml'
@@ -86,7 +100,7 @@ rule salsa_am_8_get_stats:
 
 rule am_complete:
     input:
-        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam.stats'
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam.stats'
 
 ### salsa2 stuff
 rule salsa_fmt_index_asm:
@@ -101,7 +115,7 @@ rule salsa_fmt_index_asm:
 
 rule salsa_fmt_sort_bam:
     input:
-        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam'
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam'
     output:
         's3_salsa2/' + prefix + '_rep1.sort.bam'
     conda: 'envs/bedsam.yml'
