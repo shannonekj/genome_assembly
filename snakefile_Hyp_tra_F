@@ -177,5 +177,5 @@ rule get_final_asm:
     output:
         prefix + '.fa'
     shell:'''
-        [ -h {output} ] || ln -s {input} {output}
+        if [ -h {output} ]; then rm {output}; ln -s {input} {output}; else ln -s {input} {output}; fi
         '''
