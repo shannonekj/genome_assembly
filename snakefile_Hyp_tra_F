@@ -50,19 +50,45 @@ rule all:
 rule fake:
     output:
         's2_scaff10x/' + prefix + '.scf.fasta',
-        's3_salsa2/arima/' + prefix + '_rep1.bam',
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam',
         's1_ipa/final.a_ctg.fasta'
 
-rule salsa_arima_mapping:
+### arima mapping
+#rule salsa_am_1_idx:
+#rule salsa_am_2_fastq_to_bam:
+#rule salsa_am_3_filter_five_prime:
+#rule salsa_am_4_pair_and_map_filt:
+#rule salsa_am_5_add_read_group:
+#rule salsa_am_6_mark_dup:
+rule salsa_am_7_idx_bams:
     input:
-        ### START HERE ###
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam'
     output:
-        's3_salsa2/arima/' + prefix + '_rep1.bam'
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam.bai'
+    conda: 'arima.yml'
+    shell:'''
+        samtools index {input}
+        '''
+
+
+rule salsa_am_8_get_stats:
+    input:
+        bam = 's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam',
+        bai = 's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam.bai'
+    output:
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam.stats'
     params:
-    conda:'envs/arima.yml'
-    shell:
+        script = 'scripts/arima_mapping/get_stats.pl'
+    conda: 'arima.yml'
+    shell:'''
+        perl {params.script} {input.bam} > {output}
+        '''
 
+rule am_complete:
+    input:
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam.stats'
 
+### salsa2 stuff
 rule salsa_fmt_index_asm:
     input:
         's2_scaff10x/' + prefix + '.scf.fasta'
@@ -75,7 +101,7 @@ rule salsa_fmt_index_asm:
 
 rule salsa_fmt_sort_bam:
     input:
-        's3_salsa2/arima/' + prefix + '_rep1.bam'
+        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.bam'
     output:
         's3_salsa2/' + prefix + '_rep1.sort.bam'
     conda: 'envs/bedsam.yml'
