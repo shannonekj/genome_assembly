@@ -1,8 +1,9 @@
 # Arima Mapping Pipeline
 Scripts taken from https://github.com/shannonekj/mapping_pipeline and modified in the following ways:
-* `01_mapping_arima.sh`
+1. `01_mapping_arima.sh`
     * `head -16 01_mapping_arima.sh > run_arima_mapping.sh`
-    * ```cat << EOT >> run_arima_mapping.sh
+    * ```
+cat << EOT >> run_arima_mapping.sh
 set -e
 
 SRA="Smelt-Joslin"
@@ -29,12 +30,11 @@ CPU=${threads}
 
 EOT
 ```
-
     * `tail -68 01_mapping_arima.sh >> run_arima_mapping.sh`
     * `sed -i 's/java -Xmx4G -Djava.io.tmpdir=temp\/ -jar //'` run_arima_mapping.sh 
     * `sed -i 's/java -Xmx30G -XX:-UseGCOverheadLimit -Djava.io.tmpdir=temp\/ -jar //'` run_arima_mapping.sh
     * `chmod a+x run_arima_mapping.sh`
     * `chmod a+x \*.pl`
-* `filter_five_end.pl`
-* `get_stats.pl`
-* `two_read_bam_combiner.pl`
+2. `filter_five_end.pl`
+3. `get_stats.pl`
+4. `two_read_bam_combiner.pl`
