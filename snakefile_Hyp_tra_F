@@ -34,10 +34,10 @@ chrmnmr_path = config['chromonomer_path']
 i = config['i']
 #### arima
 scratch_dir = config['scratch_dir']
-
+map_quality = config['mapq']
 # other
 prefix = species_id + '_' + sex
-
+READS=["1", "2"]
 
 
 ###############
@@ -53,13 +53,30 @@ rule fake:
     output:
         's2_scaff10x/' + prefix + '.scf.fasta',
         's1_ipa/final.a_ctg.fasta',
-        scratch_dir + '/' + prefix + '.bam'
+        's3_salsa2/arima/02_filt_bams/' + prefix + '_1.bam',
+        's3_salsa2/arima/02_filt_bams/' + prefix + '_2.bam'
 
 ### arima mapping
 #rule salsa_am_1_idx:
 #rule salsa_am_2_fastq_to_bam:
 #rule salsa_am_3_filter_five_prime:
-#rule salsa_am_4_pair_and_map_filt:
+rule salsa_am_4_pair_and_map_filt:
+    input: 
+        bam1 = 's3_salsa2/arima/02_filt_bams/' + prefix + '_1.bam',
+        bam2 = 's3_salsa2/arima/02_filt_bams/' + prefix + '_2.bam',
+        ref = 's2_scaff10x/' + prefix + '.scf.fasta'
+    output:
+        scratch_dir + '/' + prefix + '.bam'
+    params:
+        script_combine = 'scripts/arima_mapping/two_read_bam_combiner.pl',
+        cpu = '16',
+        map_q_filter = map_quality
+    conda: 'arima.yml'
+    shell:'''
+        SAMTOOLS=$(which samtools)
+        perl {params.script_combine} {input.bam1} {input.bam2} $SAMTOOLS {params.map_q_filter} | samtools view -bS -t {input.ref}.fai - | samtools sort -@ {params.cpu} -o {output} -
+        '''
+
 rule salsa_am_5_add_read_group:
     input: 
         scratch_dir + '/' + prefix + '.bam'
@@ -111,9 +128,6 @@ rule salsa_am_8_get_stats:
         perl {params.script} {input.bam} > {output}
         '''
 
-rule am_complete:
-    input:
-        's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam.stats'
 
 ### salsa2 stuff
 rule salsa_fmt_index_asm:

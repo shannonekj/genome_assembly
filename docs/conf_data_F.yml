@@ -42,4 +42,5 @@ i: 5
 ## arima
 ### temporary directory to write output to make sure already exists
 scratch_dir: /scratch/sejoslin
+mapq: 10
 
