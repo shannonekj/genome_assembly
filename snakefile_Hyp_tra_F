@@ -6,7 +6,6 @@
 #       -Phase hic (illumina)
 #       -linkage map (Lew et al. 2015)
 
-
 ###############
 ###  SETUP  ###
 ###############
@@ -50,38 +49,55 @@ rule all:
 ## SALSA2
 #rule salsa_arima_mapping:
 rule fake:
+    params:
+        prefix = prefix
     output:
         's2_scaff10x/' + prefix + '.scf.fasta',
         's1_ipa/final.a_ctg.fasta',
-        's3_salsa2/arima/02_filt_bams/' + prefix + '_1.bam',
-        's3_salsa2/arima/02_filt_bams/' + prefix + '_2.bam'
+        's3_salsa2/arima/01_raw_bams/' + prefix + '_1.bam',
+        's3_salsa2/arima/01_raw_bams/' + prefix + '_2.bam'
+
 
 ### arima mapping
 #rule salsa_am_1_idx:
 #rule salsa_am_2_fastq_to_bam:
-#rule salsa_am_3_filter_five_prime:
+rule salsa_am_3_filter_five_prime:
+    input:
+        bam1 = 's3_salsa2/arima/01_raw_bams/' + prefix + '_1.bam',
+        bam2 = 's3_salsa2/arima/01_raw_bams/' + prefix + '_2.bam'
+    output:
+        bam1 = 's3_salsa2/arima/02_filt_bams/' + prefix + '_1.filtered.bam',
+        bam2 = 's3_salsa2/arima/02_filt_bams/' + prefix + '_2.filtered.bam'
+    params:
+        script = 'scripts/arima_mapping/filter_five_end.pl'
+    conda: 'arima.yml'
+    shell:'''
+        samtools view -h {input.bam1} | perl {params.script} | samtools view -Sb - > {output.bam1}
+        samtools view -h {input.bam2} | perl {params.script} | samtools view -Sb - > {output.bam2}
+        '''
+
 rule salsa_am_4_pair_and_map_filt:
     input: 
-        bam1 = 's3_salsa2/arima/02_filt_bams/' + prefix + '_1.bam',
-        bam2 = 's3_salsa2/arima/02_filt_bams/' + prefix + '_2.bam',
+        bam1 = 's3_salsa2/arima/02_filt_bams/' + prefix + '_1.filtered.bam',
+        bam2 = 's3_salsa2/arima/02_filt_bams/' + prefix + '_2.filtered.bam',
         ref = 's2_scaff10x/' + prefix + '.scf.fasta'
     output:
-        scratch_dir + '/' + prefix + '.bam'
+        scratch_dir + '/' + prefix + '.paired.bam'
     params:
-        script_combine = 'scripts/arima_mapping/two_read_bam_combiner.pl',
+        script = 'scripts/arima_mapping/two_read_bam_combiner.pl',
         cpu = '16',
         map_q_filter = map_quality
     conda: 'arima.yml'
     shell:'''
         SAMTOOLS=$(which samtools)
-        perl {params.script_combine} {input.bam1} {input.bam2} $SAMTOOLS {params.map_q_filter} | samtools view -bS -t {input.ref}.fai - | samtools sort -@ {params.cpu} -o {output} -
+        perl {params.script} {input.bam1} {input.bam2} $SAMTOOLS {params.map_q_filter} | samtools view -bS -t {input.ref}.fai - | samtools sort -@ {params.cpu} -o {output} -
         '''
 
 rule salsa_am_5_add_read_group:
     input: 
-        scratch_dir + '/' + prefix + '.bam'
+        scratch_dir + '/' + prefix + '.paired.bam'
     output:
-        's3_salsa2/arima/03_pair_bams/' + prefix + '_rep1.paired.bam'
+        's3_salsa2/arima/03_pair_bams/' + prefix + '_rep1.grouped.bam'
     params:
         id = prefix,
         lb = prefix,
@@ -93,7 +109,7 @@ rule salsa_am_5_add_read_group:
 
 rule salsa_am_6_mark_dup:
     input:
-        's3_salsa2/arima/03_pair_bams/' + prefix + '_rep1.paired.bam'
+        's3_salsa2/arima/03_pair_bams/' + prefix + '_rep1.grouped.bam'
     output:
         bam = 's3_salsa2/arima/04_deduped/' + prefix + '_rep1.deduped.bam',
         metrics = 's3_salsa2/arima/04_deduped/metrics.' + prefix + '.txt'
