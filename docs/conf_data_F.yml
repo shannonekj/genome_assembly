@@ -43,4 +43,4 @@ i: 5
 ### temporary directory to write output to make sure already exists
 scratch_dir: /scratch/sejoslin
 mapq: 10
-
+cpu: 16

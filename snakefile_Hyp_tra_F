@@ -20,8 +20,8 @@ genome_size = config['genomesize']
 hifi_file = config['hifi']
 tenx_r1 = config['tenx_r1']
 tenx_r2 = config['tenx_r2']
-HIC_r1 = config['hic_r1']
-HIC_r2 = config['hic_r2']
+hic_r1 = config['hic_r1']
+hic_r2 = config['hic_r2']
 ### other file inputs
 lg_loci = config['lg_loci']
 lg_tsv = config['lg_tsv']
@@ -34,9 +34,9 @@ i = config['i']
 #### arima
 scratch_dir = config['scratch_dir']
 map_quality = config['mapq']
+cpu = config['cpu']
 # other
 prefix = species_id + '_' + sex
-READS=["1", "2"]
 
 
 ###############
@@ -53,14 +53,27 @@ rule fake:
         prefix = prefix
     output:
         's2_scaff10x/' + prefix + '.scf.fasta',
-        's1_ipa/final.a_ctg.fasta',
-        's3_salsa2/arima/01_raw_bams/' + prefix + '_1.bam',
-        's3_salsa2/arima/01_raw_bams/' + prefix + '_2.bam'
+        's1_ipa/final.a_ctg.fasta'
+
 
 
 ### arima mapping
 #rule salsa_am_1_idx:
-#rule salsa_am_2_fastq_to_bam:
+rule salsa_am_2_fastq_to_bam:
+    input:
+        fq1 = hic_r1,
+        fq2 = hic_r2,
+        ref = 's2_scaff10x/' + prefix + '.scf.fasta'
+    output:
+        bam1 = 's3_salsa2/arima/01_raw_bams/' + prefix + '_1.bam',
+        bam2 = 's3_salsa2/arima/01_raw_bams/' + prefix + '_2.bam'
+    params:
+        cpu = cpu
+    conda: 'arima.yml'
+    shell:'''
+        $BWA mem -t $CPU $REF $IN_DIR/$SRA\_2.fastq.gz | $SAMTOOLS view -@ $CPU -Sb - > $RAW_DIR/$SRA\_2.bam
+        '''
+
 rule salsa_am_3_filter_five_prime:
     input:
         bam1 = 's3_salsa2/arima/01_raw_bams/' + prefix + '_1.bam',
@@ -85,7 +98,7 @@ rule salsa_am_4_pair_and_map_filt:
         scratch_dir + '/' + prefix + '.paired.bam'
     params:
         script = 'scripts/arima_mapping/two_read_bam_combiner.pl',
-        cpu = '16',
+        cpu = cpu,
         map_q_filter = map_quality
     conda: 'arima.yml'
     shell:'''
