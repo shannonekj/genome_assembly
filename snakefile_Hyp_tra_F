@@ -52,12 +52,20 @@ rule fake:
         prefix = prefix
     output:
         's2_scaff10x/' + prefix + '.ipa.fasta',
-        's1_ipa/final.a_ctg.fasta',
-        's2_scaff10x/input.dat'
+        's1_ipa/final.a_ctg.fasta'
 
 ## scaff10x
 #rule symlink_ipa_asm:
-#rule make_input_fofn:
+rule scaff10x_make_inputdat:
+    input:
+        tnx_r1 = tenx_r1,
+        tnx_r2 = tenx_r2
+    output:
+        's2_scaff10x/input.dat'
+    shell:'''
+        echo q1={input.tnx_r1} > {output}
+        echo q2={input.tnx_r2} >> {output}
+        '''
 
 rule scaff10x_run:
     input:

@@ -15,6 +15,7 @@ number_of_pcb_runs: 2
 ## raw input
 ### please use full path to each file & ensure that your raw data are backed up and read only
 #### tenx
+tenx_dir: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-10X_M
 tenx_r1: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-10X_M/Male2_S63_L004_R1_001.fastq.gz
 tenx_r2: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-10X_M/Male2_S63_L004_R2_001.fastq.gz
 
