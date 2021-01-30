@@ -51,11 +51,19 @@ rule fake:
     params:
         prefix = prefix
     output:
-        's2_scaff10x/' + prefix + '.ipa.fasta',
+        's1_ipa/' + prefix + '.ipa.fasta',
         's1_ipa/final.a_ctg.fasta'
 
 ## scaff10x
-#rule symlink_ipa_asm:
+rule scaff10x_symlink_ipa_asm:
+    input:
+        's1_ipa/' + prefix + '.ipa.fasta'
+    output:
+        's2_scaff10x/' + prefix + '.ipa.fasta'
+    shell:'''
+        if [ -h {output} ]; then rm {output}; ln -s {input} {output}; else ln -s {input} {output}; fi
+        '''
+
 rule scaff10x_make_inputdat:
     input:
         tnx_r1 = tenx_r1,
