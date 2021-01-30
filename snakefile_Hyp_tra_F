@@ -46,17 +46,34 @@ rule all:
     input:
         prefix + '.fa'
 
-## SALSA2
-#rule salsa_arima_mapping:
+# fake rule to get previous files 
 rule fake:
     params:
         prefix = prefix
     output:
+        's2_scaff10x/' + prefix + '.ipa.fasta',
+        's1_ipa/final.a_ctg.fasta',
+        's2_scaff10x/input.dat'
+
+## scaff10x
+#rule symlink_ipa_asm:
+#rule make_input_fofn:
+
+rule scaff10x_run:
+    input:
+        fofn = 's2_scaff10x/input.dat',
+        ipa_asm = 's2_scaff10x/' + prefix + '.ipa.fasta'
+    output:
         's2_scaff10x/' + prefix + '.scf.fasta',
-        's1_ipa/final.a_ctg.fasta'
+    params:
+    threads: workflow.cores * 0.9
+    conda: 'scaffold_10x.yml'
+    shell:'''
+        scaff10x -nodes {threads} -longread 1 -gap 100 -matrix 2000 -reads 10 -link 8 -score 20 -edge 50000 -block 50000 -data {input.fofn} {input.ipa_asm} {output}
+        '''
 
 
-
+## SALSA2
 ### arima mapping
 rule salsa_am_1_idx:
     input:
