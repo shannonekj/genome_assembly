@@ -11,32 +11,42 @@
 ###############
 # override this with --configfile on command line
 configfile: 'docs/conf_data_F.yml'
+
 ## load in configuration things
 ### general info
 sex = config['sex']
 species_id = config['speciesID']
 genome_size = config['genomesize']
+
 ### raw data
-hifi_file = config['hifi']
+hifi_a = config['hifi_a']
+hifi_b = config['hifi_b']
+hifi_c = config['hifi_c']
 tenx_r1 = config['tenx_r1']
 tenx_r2 = config['tenx_r2']
 hic_r1 = config['hic_r1']
 hic_r2 = config['hic_r2']
+
 ### other file inputs
 lg_loci = config['lg_loci']
 lg_tsv = config['lg_tsv']
+
 ### software
 salsa_path = config['salsa_path']
 chrmnmr_path = config['chromonomer_path']
+
 ### parameters
 #### salsa2
 i = config['i']
+
 #### arima
 scratch_dir = config['scratch_dir']
 map_quality = config['mapq']
 cpu = config['cpu']
+
 # other
 prefix = species_id + '_' + sex
+
 
 
 ###############
@@ -47,12 +57,48 @@ rule all:
         prefix + '.fa'
 
 # fake rule to get previous files 
-rule fake:
-    params:
-        prefix = prefix
+#rule fake:
+#    params:
+#        prefix = prefix
+#    output:
+#        's1_ipa/final.a_ctg.fasta'
+
+
+## ipa
+rule ipa_make_fofn:
+    input:
+        a = hifi_a,
+        b = hifi_b,
+        c = hifi_c
     output:
-        's1_ipa/' + prefix + '.ipa.fasta',
-        's1_ipa/final.a_ctg.fasta'
+        's1_ipa/ipa_input.fofn'
+    shell:'''
+        echo {input.a} > {output}        
+        echo {input.b} >> {output}
+        echo {input.c} >> {output}
+        '''
+
+rule ipa_run:
+    input:
+        's1_ipa/ipa_input.fofn'
+    output:
+        's1_ipa/RUN/assembly-results/final.a_ctg.fasta',
+        's1_ipa/RUN/assembly-results/final.p_ctg.fasta' 
+    conda: 'ipa.yml'
+    threads: workflow.cores * 0.9
+    shell:'''
+        ipa local --input-fn {input} --nthreads {threads} --verbose --njobs {threads} --tmp-dir s1_ipa --resume
+        '''
+
+rule ipa_symlink_asm:
+    input:
+        's1_ipa/ipa_input.fofn'
+    output:
+        's1_ipa/' + prefix + '.ipa.fasta'
+    shell:'''
+        if [ -h {output} ]; then rm {output}; ln -s {input} {output}; else ln -s {input} {output}; fi
+        '''
+
 
 ## scaff10x
 rule scaff10x_symlink_ipa_asm:
@@ -246,7 +292,7 @@ rule salsa_fmt_sort_bed:
 rule salsa_run:
     input:
         asm = 's2_scaff10x/' + prefix + '.scf.fasta',
-        dup = 's1_ipa/final.a_ctg.fasta', 
+        dup = 's1_ipa/RUN/assembly-results/final.a_ctg.fasta', 
         hic = 's3_salsa2/' + prefix + '_rep1.sort.bed'
     output:
         's3_salsa2/out/scaffolds_FINAL.agp',
