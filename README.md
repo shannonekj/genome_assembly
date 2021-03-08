@@ -1,8 +1,9 @@
 # genome_assembly
-Pipeline for genome assembly of eukaryotic organisms...hopefully. 
+Pipeline for genome assembly of eukaryotic organisms. 
 
-Built with: _Hypomesus transpacificus_
-Test case: _Spirinchus thaleichthys_
+The first test cases are with smelts:
+* Built with: _Hypomesus transpacificus_ (delta smelt)
+* Test case: _Spirinchus thaleichthys_ (longfin smelt)
 
 Data types:
 * longreads (PacBio)
