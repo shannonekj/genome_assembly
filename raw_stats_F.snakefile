@@ -41,6 +41,9 @@ rule all:
         expand("output/fastqc/{sample}.html", sample=SHORT_SAMPLES),
         expand("output/fastqc/{sample}.zip", sample=SHORT_SAMPLES),
         expand("output/kat_raw/tnx_k{kmer}_kat_hist{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".png"]),
+        expand("output/kat_raw/hic_k{kmer}_kat_hist{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".png"]),
+        expand("output/kat_raw/tnx_k{kmer}_kat_gcp{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".mx", ".mx.png"]),
+        expand("output/kat_raw/hic_k{kmer}_kat_gcp{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".mx", ".mx.png"]),
 
 rule rename_files:
     input:
@@ -91,21 +94,52 @@ rule kat_hist_tnx:
         "output/kat_raw/tnx_k{kmer}_kat_hist.dist_analysis.json",
         "output/kat_raw/tnx_k{kmer}_kat_hist.png"
     conda: 'envs/kat.yml'
+    threads: workflow.cores * 0.3
     shell:'''
-        kat hist {input} {wildcards.kmer}
+        kat hist -o tnx_k{wildcards.kmer}_kat_hist -m {wildcards.kmer} -t {threads} {input}
         '''
 
-#rule kat_hist:
-#    input:
-#        R1 = "input/data/raw/{seq}_R1.fastq.gz",
-#        R2 = "input/data/raw/{seq}_R2.fastq.gz",
-#    output:
-#        expand("output/kat_raw/{seq}_k{kmer}_kat_hist.{suffix}", seq=["tnx", "hic"], kmer=[21, 31, 41], suffix=["", ".dist_analysis.json", ".png"])
-#    conda: 'envs/kat.yml'
-#    shell:'''
-#        kat hist {input.R1} {input.R2} 
-#        '''
+rule kat_hist_hic:
+    input:
+        expand("input/data/raw/hic_R{r}.fastq.gz", r=[1, 2])
+    output:
+        "output/kat_raw/hic_k{kmer}_kat_hist.dist_analysis.json",
+        "output/kat_raw/hic_k{kmer}_kat_hist.png"
+    conda: 'envs/kat.yml'
+    threads: workflow.cores * 0.3
+    shell:'''
+        kat hist -o hic_k{wildcards.kmer}_kat_hist -m {wildcards.kmer} -t {threads} {input}
+        '''
 
+rule kat_gcp_tnx:
+    input:
+        expand("input/data/raw/tnx_R{r}.fastq.gz", r=[1, 2])
+    output:
+        "output/kat_raw/tnx_k{kmer}_kat_gcp.dist_analysis.json",
+        "output/kat_raw/tnx_k{kmer}_kat_gcp.mx",
+        "output/kat_raw/tnx_k{kmer}_kat_gcp.mx.png",
+    params:
+        tech = 'tnx'
+    conda: 'envs/kat.yml'
+    threads: workflow.cores * 0.3
+    shell:'''
+        kat gcp -o {params.tech}_k{wildcards.kmer}_kat_gcp -m {wildcards.kmer} -t {threads} {input}
+        '''
+
+rule kat_gcp_hic:
+    input:
+        expand("input/data/raw/hic_R{r}.fastq.gz", r=[1, 2])
+    output:
+        "output/kat_raw/hic_k{kmer}_kat_gcp.dist_analysis.json",
+        "output/kat_raw/hic_k{kmer}_kat_gcp.mx",
+        "output/kat_raw/hic_k{kmer}_kat_gcp.mx.png",
+    params:
+        tech = 'hic'
+    conda: 'envs/kat.yml'
+    threads: workflow.cores * 0.3
+    shell:'''
+        kat gcp -o {params.tech}_k{wildcards.kmer}_kat_gcp -m {wildcards.kmer} -t {threads} {input}
+        '''
 
 
 
