@@ -20,11 +20,6 @@ import pandas as pd
 configfile: 'docs/conf_data_F.yml'
 
 ## load in
-### general info
-sex = config['sex']
-species_id = config['speciesID']
-genome_size = config['genomesize']
-
 ### raw data
 hifi_a = config['hifi_a']
 hifi_b = config['hifi_b']
@@ -33,26 +28,6 @@ tenx_r1 = config['tenx_r1']
 tenx_r2 = config['tenx_r2']
 hic_r1 = config['hic_r1']
 hic_r2 = config['hic_r2']
-
-### other file inputs
-lg_loci = config['lg_loci']
-lg_tsv = config['lg_tsv']
-
-### software
-salsa_path = config['salsa_path']
-chrmnmr_path = config['chromonomer_path']
-
-### parameters
-#### salsa2
-i = config['i']
-
-#### arima
-scratch_dir = config['scratch_dir']
-map_quality = config['mapq']
-cpu = config['cpu']
-
-# other
-prefix = species_id + '_' + sex
 
 
 
@@ -74,11 +49,15 @@ rule fofn_short_reads:
     output:
         'input/shrt_reads_raw.fofn'
     shell: '''
-        echo file > {output}
-        echo {input.tr1} >> {output}
-        echo {input.tr2} >> {output}
-        echo {input.hr1} >> {output}
-        echo {input.hr2} >> {output}
+        echo -e file'\t'sample'\t'name > {output}
+        name=$(echo {input.tr1} | rev | cut -f1 -d/ | rev)
+        echo {input.tr1}'\t'$name'\t'tnx_R1 >> {output}
+        name=$(echo {input.tr2} | rev | cut -f1 -d/ | rev)
+        echo {input.tr2}'\t'$name'\t'tnx_R2 >> {output}
+        name=$(echo {input.hr1} | rev | cut -f1 -d/ | rev)
+        echo {input.hr1}'\t'$name'\t'hic_R1 >> {output}
+        name=$(echo {input.hr2} | rev | cut -f1 -d/ | rev)
+        echo {input.hr2}'\t'$name'\t'hic_R2 >> {output}
         '''
                 
 rule fofn_long_reads:
@@ -89,10 +68,13 @@ rule fofn_long_reads:
     output:
         'input/long_reads_raw.fofn'
     shell: '''
-        echo file > {output}
-        echo {input.h1} >> {output}
-        echo {input.h2} >> {output}
-        echo {input.h3} >> {output}
+        echo -e file'\t'sample'\t'name > {output}
+        name=$(echo {input.h1} | rev | cut -f1 -d/ | rev)
+        echo {input.h1}'\t'$name'\t'pcb_1 >> {output}
+        name=$(echo {input.h2} | rev | cut -f1 -d/ | rev)
+        echo {input.h2}'\t'$name'\t'pcb_2 >> {output}
+        name=$(echo {input.h3} | rev | cut -f1 -d/ | rev)
+        echo {input.h3}'\t'$name'\t'pcb_3 >> {output}
         '''
 
 
