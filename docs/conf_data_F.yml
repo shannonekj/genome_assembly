@@ -25,11 +25,20 @@ hifi_a: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpaci
 hifi_b: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-pcb_F/PB420_DeltaSmelt-Female_LowInputHiFi/r64069_20200828_233229/B1/0000001818/outputs/m64069_200830_055940.Q20.fastq
 hifi_c: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-pcb_F/PB420_DeltaSmelt-Female_LowInputHiFi/r64069_20201002_213541/A1/0000001898/outputs/m64069_201002_215024.Q20.fastq
 
-
-
 #### hi-c
 hic_r1: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-hic_F/Smelt_Results/Hi-C/Smelt-Joslin_R1_001.fastq.gz
 hic_r2: /group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-hic_F/Smelt_Results/Hi-C/Smelt-Joslin_R2_001.fastq.gz
+
+sample_long_links:
+    "hifi_a": "/group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-pcb_F/PB420_DeltaSmelt_Female/r64069_20200603_180703/A1/0000001590/outputs/m64069_200603_183739.Q20.fastq"
+    "hifi_b": "/group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-pcb_F/PB420_DeltaSmelt-Female_LowInputHiFi/r64069_20200828_233229/B1/0000001818/outputs/m64069_200830_055940.Q20.fastq"
+    "hifi_c": "/group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-pcb_F/PB420_DeltaSmelt-Female_LowInputHiFi/r64069_20201002_213541/A1/0000001898/outputs/m64069_201002_215024.Q20.fastq"
+
+sample_short_links:
+    "tnx_R1": "/group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-10X_M/Male2_S63_L004_R1_001.fastq.gz"
+    "tnx_R2": "/group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-10X_M/Male2_S63_L004_R2_001.fastq.gz"
+    "hic_R1": "/group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-hic_F/Smelt_Results/Hi-C/Smelt-Joslin_R1_001.fastq.gz"
+    "hic_R2": "/group/millermrgrp2/shannon/projects/assembly_genome_Hypomesus-transpacificus/00-raw_data/data-hic_F/Smelt_Results/Hi-C/Smelt-Joslin_R2_001.fastq.gz"
 
 ## other input
 ### linkage group
