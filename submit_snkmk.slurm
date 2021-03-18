@@ -19,7 +19,7 @@ set -o nounset
 set -o errexit
 set -x
 
-snakemake -p -j 8 --use-conda -n
+snakemake -p -j 8 --use-conda -s raw_stats_F.snakefile
 
 env | grep SLURM 
 
