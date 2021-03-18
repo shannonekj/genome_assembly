@@ -1,4 +1,5 @@
 include: "snakefiles/prep_F.snakefile"
+include: "raw_stats_F.snakefile"
 #include: "snakefiles/prep_M.snakefile"
 include: "snakefiles/asm_F.snakefile"
 #include: "snakefiles/asm_M.snakefile"
