@@ -38,8 +38,8 @@ rule all:
     input:
         expand("input/data/raw/{sample}.fastq", sample=LONG_SAMPLES),
 #        expand("input/data/raw/{sample}.fastq.gz", sample=SHORT_SAMPLES),
-        expand("output/fastqc/{sample}.html", sample=SHORT_SAMPLES),
-        expand("output/fastqc/{sample}.zip", sample=SHORT_SAMPLES),
+        expand("output/fastqc/{sample}_fastqc.html", sample=SHORT_SAMPLES),
+        expand("output/fastqc/{sample}_fastqc.zip", sample=SHORT_SAMPLES),
         expand("output/kat_raw/tnx_k{kmer}_kat_hist{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".png"]),
         expand("output/kat_raw/hic_k{kmer}_kat_hist{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".png"]),
         expand("output/kat_raw/tnx_k{kmer}_kat_gcp{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".mx", ".mx.png"]),
@@ -78,8 +78,8 @@ rule get_fastqc:
     input:
         "input/data/raw/{sample}.fastq.gz"
     output:
-        "output/fastqc/{sample}.html",
-        "output/fastqc/{sample}.zip"
+        "output/fastqc/{sample}_fastqc.html",
+        "output/fastqc/{sample}_fastqc.zip"
     params:
         outdir = directory("output/fastqc")
     conda: 'envs/short_qc.yml'
