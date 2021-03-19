@@ -40,10 +40,8 @@ rule all:
 #        expand("input/data/raw/{sample}.fastq.gz", sample=SHORT_SAMPLES),
         expand("output/fastqc/{sample}_fastqc.html", sample=SHORT_SAMPLES),
         expand("output/fastqc/{sample}_fastqc.zip", sample=SHORT_SAMPLES),
-        expand("output/kat_raw/tnx_k{kmer}_kat_hist{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".png"]),
-        expand("output/kat_raw/hic_k{kmer}_kat_hist{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".png"]),
-        expand("output/kat_raw/tnx_k{kmer}_kat_gcp{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".mx", ".mx.png"]),
-        expand("output/kat_raw/hic_k{kmer}_kat_gcp{suffix}", kmer=KMER, suffix=[".dist_analysis.json", ".mx", ".mx.png"]),
+        expand("output/kat_raw/{shrt_tech}_k{kmer}_kat_hist{suffix}", shrt_tech=['tnx', 'hic'], kmer=KMER, suffix=[".dist_analysis.json", ".png"]),
+        expand("output/kat_raw/{shrt_tech}_k{kmer}_kat_gcp{suffix}", shrt_tech=['tnx', 'hic'], kmer=KMER, suffix=[".dist_analysis.json", ".mx", ".mx.png"]),
         expand("output/kat_raw/{shrt_tech}_k{kmer}_kat_comp{suffix}", shrt_tech=['tnx', 'hic'], kmer=KMER, suffix=["-main.mx", "-main.mx.density.png", ".stats"]),
 
 rule rename_files:

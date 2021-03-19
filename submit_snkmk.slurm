@@ -1,8 +1,8 @@
 #!/bin/bash -login
 #SBATCH -p high
 #SBATCH -J smk
-#SBATCH -o jobs/slurm/snakemake.j%j.out
-#SBATCH -e jobs/slurm/snakemake.j%j.err
+#SBATCH -o jobs/slurm/snakemake.j%j.kat_stats.out
+#SBATCH -e jobs/slurm/snakemake.j%j.kat_stats.err
 #SBATCH -c 8
 #SBATCH -t 01-0:30:00
 #SBATCH --mem=24gb
