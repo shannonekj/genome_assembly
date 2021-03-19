@@ -1,11 +1,11 @@
 #!/bin/bash -login
-#SBATCH -p high
+#SBATCH -p bigmemh
 #SBATCH -J smk
 #SBATCH -o jobs/slurm/snakemake.j%j.kat_stats.out
 #SBATCH -e jobs/slurm/snakemake.j%j.kat_stats.err
-#SBATCH -c 8
-#SBATCH -t 01-0:30:00
-#SBATCH --mem=24gb
+#SBATCH -c 24
+#SBATCH -t 03-06:12:24
+#SBATCH --mem=256gb
 
 # initialize conda
 . ~/miniconda3/etc/profile.d/conda.sh
@@ -19,7 +19,11 @@ set -o nounset
 set -o errexit
 set -x
 
+echo ""
+echo "Running snakefile" $(date +%D' '%T)
 snakemake -p -j 8 --use-conda -s raw_stats_F.snakefile
+echo "    Complete!" $(date +%D' '%T)
+echo ""
 
 env | grep SLURM 
 
