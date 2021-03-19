@@ -3,7 +3,7 @@
 #SBATCH -J smk
 #SBATCH -o jobs/slurm/snakemake.j%j.kat_stats.out
 #SBATCH -e jobs/slurm/snakemake.j%j.kat_stats.err
-#SBATCH -c 24
+#SBATCH -c 54
 #SBATCH -t 03-06:12:24
 #SBATCH --mem=256gb
 
@@ -20,8 +20,8 @@ set -o errexit
 set -x
 
 echo ""
-echo "Running snakefile" $(date +%D' '%T)
-snakemake -p -j 8 --use-conda -s raw_stats_F.snakefile
+echo "Running snakefile using $SLURM_CPUS_PER_TASK threads" $(date +%D' '%T)
+snakemake -p -j $SLURM_CPUS_PER_TASK --use-conda -s raw_stats_F.snakefile
 echo "    Complete!" $(date +%D' '%T)
 echo ""
 
