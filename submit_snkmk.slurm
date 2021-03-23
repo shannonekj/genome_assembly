@@ -1,11 +1,12 @@
 #!/bin/bash -login
-#SBATCH -p bigmemh
-#SBATCH -J smk
+#SBATCH -p high
+#SBATCH -J runsmk
 #SBATCH -o jobs/slurm/snakemake.j%j.kat_stats.out
 #SBATCH -e jobs/slurm/snakemake.j%j.kat_stats.err
-#SBATCH -c 54
-#SBATCH -t 03-06:12:24
-#SBATCH --mem=256gb
+#SBATCH --ntasks=1
+#SBATCH -c 1
+#SBATCH -t 04-08:16:32
+#SBATCH --mem=2Gb
 
 # initialize conda
 . ~/miniconda3/etc/profile.d/conda.sh
@@ -21,7 +22,8 @@ set -x
 
 echo ""
 echo "Running snakefile using $SLURM_CPUS_PER_TASK threads" $(date +%D' '%T)
-snakemake -p -j $SLURM_CPUS_PER_TASK --use-conda -s raw_stats_F.snakefile
+snakemake --cluster "sbatch -t {cluster.time} -p {cluster.partition} -N {cluster.nodes} -n {cluster.ntasks} --mem={cluster.memory} -e {cluster.error} -o {cluster.output}" --cluster-config docs/farm_config.yml --jobs 18 --latency-wait=15 --use-conda -s raw_stats_F.snakefile
+#snakemake -p -j $SLURM_CPUS_PER_TASK --use-conda -s raw_stats_F.snakefile 
 echo "    Complete!" $(date +%D' '%T)
 echo ""
 
