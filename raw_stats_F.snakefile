@@ -94,9 +94,9 @@ rule kat_hist:
         "output/kat_raw/{shrt_tech}_k{kmer}_kat_hist.dist_analysis.json",
         "output/kat_raw/{shrt_tech}_k{kmer}_kat_hist.png",
     conda: 'envs/kat.yml'
-    threads: workflow.cores * 0.3
+    threads: workflow.cores
     shell:'''
-        kat hist -o {wildcards.shrt_tech}_k{wildcards.kmer}_kat_hist -m {wildcards.kmer} -t {threads} {input}
+        kat hist -o output/kat_raw/{wildcards.shrt_tech}_k{wildcards.kmer}_kat_hist -m {wildcards.kmer} -t {threads} {input}
         '''
 
 rule kat_gcp:
@@ -108,9 +108,9 @@ rule kat_gcp:
         "output/kat_raw/{shrt_tech}_k{kmer}_kat_gcp.mx",
         "output/kat_raw/{shrt_tech}_k{kmer}_kat_gcp.mx.png",
     conda: 'envs/kat.yml'
-    threads: workflow.cores * 0.3
+    threads: workflow.cores
     shell:'''
-        kat gcp -o {wildcards.shrt_tech}_k{wildcards.kmer}_kat_gcp -m {wildcards.kmer} -t {threads} {input}
+        kat gcp -o output/kat_raw/{wildcards.shrt_tech}_k{wildcards.kmer}_kat_gcp -m {wildcards.kmer} -t {threads} {input}
         '''
 
 rule kat_comp:
@@ -121,12 +121,10 @@ rule kat_comp:
         "output/kat_raw/{shrt_tech}_k{kmer}_kat_comp-main.mx",
         "output/kat_raw/{shrt_tech}_k{kmer}_kat_comp-main.mx.density.png",
         "output/kat_raw/{shrt_tech}_k{kmer}_kat_comp.stats",
-    params:
-        tech = 'hic'
     conda: 'envs/kat.yml'
-    threads: workflow.cores * 0.3
+    threads: workflow.cores
     shell:'''
-        kat comp -n -o {wildcards.shrt_tech}_k{wildcards.kmer}_kat_comp -m {wildcards.kmer} -t {threads} {input}
+        kat comp -n -o output/kat_raw/{wildcards.shrt_tech}_k{wildcards.kmer}_kat_comp -m {wildcards.kmer} -t {threads} {input}
         '''
 
 
