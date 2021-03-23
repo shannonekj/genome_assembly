@@ -1,11 +1,11 @@
 # cluster_config.yml - cluster configuration
 __default__:
     account: sejoslin
-    partition: high
-    time: 02-04:08:16
+    partition: bigmemh
+    time: 04-08:16:32
     nodes: 1
-    ntasks: 2
-    memory: 4Gb
+    ntasks: 12
+    memory: MaxMemPerNode
     chdir: /home/sejoslin/git_repos/genome_assembly
     jobname: "{rule}"
     output: "jobs/slurm/snakemake.j%j.{rule}.out"
