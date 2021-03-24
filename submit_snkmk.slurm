@@ -1,8 +1,8 @@
 #!/bin/bash -login
 #SBATCH -p high
 #SBATCH -J runsmk
-#SBATCH -o jobs/slurm/snakemake.j%j.kat_stats.out
-#SBATCH -e jobs/slurm/snakemake.j%j.kat_stats.err
+#SBATCH -o jobs/slurm/snakemake.j%j.proc10xG.out
+#SBATCH -e jobs/slurm/snakemake.j%j.proc10xG.err
 #SBATCH --ntasks=1
 #SBATCH -c 1
 #SBATCH -t 04-08:16:32
@@ -22,7 +22,7 @@ set -x
 
 echo ""
 echo "Running snakefile using $SLURM_CPUS_PER_TASK threads" $(date +%D' '%T)
-snakemake --cluster "sbatch -t {cluster.time} -p {cluster.partition} -N {cluster.nodes} -n {cluster.ntasks} --mem={cluster.memory} -e {cluster.error} -o {cluster.output}" --cluster-config docs/farm_config.yml --jobs 18 --latency-wait=15 --use-conda -s raw_stats_F.snakefile
+snakemake --cluster "sbatch -t {cluster.time} -p {cluster.partition} -N {cluster.nodes} -n {cluster.ntasks} --mem={cluster.memory} -e {cluster.error} -o {cluster.output}" --cluster-config docs/farm_config.yml --jobs 18 --latency-wait=30 --use-conda --keep-going -s proc10xG.snakefile
 #snakemake -p -j $SLURM_CPUS_PER_TASK --use-conda -s raw_stats_F.snakefile 
 echo "    Complete!" $(date +%D' '%T)
 echo ""
