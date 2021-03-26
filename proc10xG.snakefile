@@ -66,7 +66,7 @@ rule process_tnx:
         "input/data/filtered/{sex}_tnx_proc_R2_001.fastq.gz",
     conda: 'envs/py2.7.14.yml'
     shell:'''
-        python2 {input.script} -1 {input.r1} -2 {input.r2} -o {wildcards.sex}_tnx_proc -a
+        python2 {input.script} -1 {input.r1} -2 {input.r2} -o input/data/filtered/{wildcards.sex}_tnx_proc -a
         '''
 
 rule filter_tnx:
@@ -79,7 +79,7 @@ rule filter_tnx:
         "input/data/filtered/{sex}_tnx_filt_R2_001.fastq.gz",
     conda: 'envs/py2.7.14.yml'
     shell:'''
-        python2 {input.script} -1 {input.r1} -2 {input.r2} -o {wildcards.sex}_tnx_filt
+        python2 {input.script} -1 {input.r1} -2 {input.r2} -o input/data/filtered/{wildcards.sex}_tnx_filt
         '''
 
 
