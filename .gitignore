@@ -2,3 +2,4 @@ input/*
 .snakemake/*
 jobs/slurm/*
 output/*
+sandbox/*
