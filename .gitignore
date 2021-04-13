@@ -1,4 +1,4 @@
 input/*
 .snakemake/*
-jobs/*
+jobs/slurm/*
 output/*
