@@ -3,3 +3,4 @@ input/*
 jobs/slurm/*
 output/*
 sandbox/*
+scripts/proc10xG/
