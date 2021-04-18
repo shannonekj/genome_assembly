@@ -1,2 +1,6 @@
 input/*
 .snakemake/*
+jobs/slurm/*
+output/*
+sandbox/*
+scripts/proc10xG/

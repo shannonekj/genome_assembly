@@ -52,16 +52,9 @@ prefix = species_id + '_' + sex
 ###############
 ###  r00lz  ###
 ###############
-rule all:
+rule all_F:
     input:
         prefix + '.fa'
-
-# fake rule to get previous files 
-#rule fake:
-#    params:
-#        prefix = prefix
-#    output:
-#        's1_ipa/final.a_ctg.fasta'
 
 
 ## ipa
