@@ -5,7 +5,7 @@
 #SBATCH -o slurm/j%j.a%a.manual_run_kat_stats.out
 #SBATCH --nodes=1
 #SBATCH --ntasks=8
-#SBATCH --mem=MaxMemPerNode
+#SBATCH --mem=480Gb
 #SBATCH --time=02-12
 #SBATCH -p bigmemm
 
@@ -31,8 +31,10 @@ threads=${SLURM_NTASKS}
 out_dir="/home/sejoslin/git_repos/genome_assembly/output/kat_raw"
 cd ${out_dir}
 
-kat_cmd=("kat hist -o F_tnx_k31_kat_hist -m 31 -t ${threads} ${infiles[0]} ${infiles[1]}" "kat hist -o F_tnx_k41_kat_hist -m 41 -t ${threads} ${infiles[0]} ${infiles[1]}" "kat gcp -o F_tnx_k31_kat_gcp -m 31 -t ${threads} ${infiles[0]} ${infiles[1]}" "kat gcp -o F_tnx_k41_kat_gcp -m 41 -t ${threads} ${infiles[0]} ${infiles[1]}" "kat comp -n -o F_tnx_k41_kat_comp -m 41 -t ${threads} ${infiles[0]} ${infiles[1]}")
+kat_cmd=("kat hist -H 62500000000 -o F_tnx_k31_kat_hist -m 31 --verbose -t ${threads} ${infiles[0]} ${infiles[1]}" "kat hist -H 62500000000 -o F_tnx_k41_kat_hist -m 41 --verbose -t ${threads} ${infiles[0]} ${infiles[1]}" "kat gcp -H 62500000000 -o F_tnx_k31_kat_gcp -m 31 --verbose -t ${threads} ${infiles[0]} ${infiles[1]}" "kat gcp -H 62500000000 -o F_tnx_k41_kat_gcp -m 41 --verbose -t ${threads} ${infiles[0]} ${infiles[1]}" "kat comp -H 62500000000 -n -o F_tnx_k41_kat_comp -m 41 --verbose -t ${threads} ${infiles[0]} ${infiles[1]}")
 call=${kat_cmd[$(( $x - 1 ))]}
 
 echo ${call}
 eval ${call}
+
+sstat --format 'JobID,MaxRSS,AveCPU' -P ${SLURM_JOB_ID}.batch
