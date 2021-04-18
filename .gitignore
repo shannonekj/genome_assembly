@@ -1,6 +1,9 @@
+submit_snkmk.slurm
+
 input/*
 .snakemake/*
 jobs/slurm/*
 output/*
 sandbox/*
 scripts/proc10xG/
+test_snkmk.slurm
