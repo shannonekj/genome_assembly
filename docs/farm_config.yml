@@ -2,10 +2,10 @@
 __default__:
     account: sejoslin
     partition: bigmemh
-    time: 04-08:16:32
+    time: 32:16:32
     nodes: 1
-    ntasks: 12
-    memory: MaxMemPerNode
+    ntasks: 32
+    memory: 480Gb
     chdir: /home/sejoslin/git_repos/genome_assembly
     jobname: "{rule}"
     output: "jobs/slurm/snakemake.j%j.{rule}.out"
